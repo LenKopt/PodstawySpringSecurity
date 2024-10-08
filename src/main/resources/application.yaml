@@ -1,3 +1,5 @@
+server:
+  port: 8113
 spring:
   application:
     name: podstawySpringSecurity
