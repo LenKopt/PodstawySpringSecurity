@@ -4,11 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -23,6 +21,7 @@ public class SecurityConfig {
     public SecurityConfig(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,8 +34,7 @@ public class SecurityConfig {
     }
 
 
-
-//    @Bean
+    //    @Bean
 //    public UserDetailsService userDetailsService() {
 //        UserDetails user = User.withDefaultPasswordEncoder()
 //                .username("user")
@@ -52,33 +50,33 @@ public class SecurityConfig {
 //
 //        return new InMemoryUserDetailsManager(user, admin);
 //    }
-@Bean
-public UserDetailsService userDetailsService() {
-    JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
+    @Bean
+    public UserDetailsService userDetailsService() {
+        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
 
-    // Проверяем, есть ли пользователь "user" и "admin", если нет - создаем
-    if (!userDetailsManager.userExists("user")) {
-        userDetailsManager.createUser(
-                User.withUsername("user")
-                        .password(passwordEncoder().encode("1"))
-                        .roles("USER")
-                        .disabled(false)
-                        .build()
-        );
+        if (!userDetailsManager.userExists("user")) {
+            userDetailsManager.createUser(
+                    User.withUsername("user")
+                            .password(passwordEncoder().encode("1"))
+                            .roles("USER")
+                            .disabled(false)
+                            .build()
+            );
+        }
+
+        if (!userDetailsManager.userExists("admin")) {
+            userDetailsManager.createUser(
+                    User.withUsername("admin")
+                            .password(passwordEncoder().encode("1"))
+                            .roles("ADMIN")
+                            .disabled(false)
+                            .build()
+            );
+        }
+
+        return userDetailsManager;
     }
 
-    if (!userDetailsManager.userExists("admin")) {
-        userDetailsManager.createUser(
-                User.withUsername("admin")
-                        .password(passwordEncoder().encode("1"))
-                        .roles("ADMIN")
-                        .disabled(false)
-                        .build()
-        );
-    }
-
-    return userDetailsManager;
-}
     @Bean
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
