@@ -10,11 +10,6 @@ CREATE TABLE roles (
     role_name VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE user_roles (
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    role_id INT REFERENCES roles(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, role_id)
-);
 CREATE TABLE authorities (
     username VARCHAR(50) NOT NULL,
     authority VARCHAR(50) NOT NULL,
@@ -24,13 +19,14 @@ CREATE TABLE authorities (
 CREATE UNIQUE INDEX ix_auth_username_authority ON authorities (username, authority);
 
 INSERT INTO users (username, password, enabled) VALUES
-('user', 'password', true),
-('admin', 'adminpass', true);
+('user', '$2a$12$vbV6AzQH2lkzoJq1tlDkKeJw8Ok9COmlrKq/PvJXym468LX4v4bwK', true),
+('admin', '$2a$12$vbV6AzQH2lkzoJq1tlDkKeJw8Ok9COmlrKq/PvJXym468LX4v4bwK', true);
 
 INSERT INTO roles (role_name) VALUES
 ('ROLE_USER'),
 ('ROLE_ADMIN');
 
-INSERT INTO user_roles (user_id, role_id) VALUES
-((SELECT id FROM users WHERE username = 'user'), (SELECT id FROM roles WHERE role_name = 'ROLE_USER')),
-((SELECT id FROM users WHERE username = 'admin'), (SELECT id FROM roles WHERE role_name = 'ROLE_ADMIN'));
+
+INSERT INTO authorities (username, authority) VALUES
+('user', 'ROLE_USER'),
+('admin', 'ROLE_ADMIN');
