@@ -41,29 +41,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
-
-        if (!userDetailsManager.userExists("user")) {
-            userDetailsManager.createUser(
-                    User.withUsername("user")
-                            .password(passwordEncoder().encode("1"))
-                            .roles("USER")
-                            .disabled(false)
-                            .build()
-            );
-        }
-
-        if (!userDetailsManager.userExists("admin")) {
-            userDetailsManager.createUser(
-                    User.withUsername("admin")
-                            .password(passwordEncoder().encode("1"))
-                            .roles("ADMIN")
-                            .disabled(false)
-                            .build()
-            );
-        }
-
-        return userDetailsManager;
+        return new JdbcUserDetailsManager(dataSource);
     }
 
     @Bean
